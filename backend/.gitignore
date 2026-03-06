@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+package-lock.json # Optional: remove this line if you want to commit package-lock.json
+yarn.lock # Optional: remove this line if you want to commit yarn.lock
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build and Temp files
+build/
+dist/
+tmp/
+temp/
+ uploads/
+

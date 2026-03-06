@@ -1,0 +1,22 @@
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# macOS
+.DS_Store
+
+# Common ignores for workspaces
+node_modules/
+.env
+.env.*
+*.log
+coverage/
+
+# Vercel/Render output
+.vercel/
+.output/
