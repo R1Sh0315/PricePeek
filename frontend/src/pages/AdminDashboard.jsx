@@ -14,7 +14,9 @@ import {
     Trash2,
     MoreHorizontal,
     X,
-    CheckCircle2
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -23,6 +25,7 @@ const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showProductModal, setShowProductModal] = useState(false);
+    const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
     const [stats, setStats] = useState({ products: 0, stores: 0, clicks: 0, users: 0 });
 
     // State for creating/editing product
@@ -98,47 +101,67 @@ const AdminDashboard = () => {
     return (
         <div className="flex min-h-screen bg-slate-950 flex-col md:flex-row">
             {/* Sidebar (Hidden on small screens) */}
-            <aside className="hidden lg:flex w-64 glass border-r border-white/5 p-6 flex-col fixed h-[calc(100vh-64px)] overflow-y-auto z-20">
-                <div className="flex items-center text-2xl font-black gradient-text mb-12">
-                    <LayoutDashboard className="w-8 h-8 mr-3 text-blue-500" />
-                    Console
+            <aside className={`hidden lg:flex glass border-r border-white/5 p-6 flex-col fixed h-[calc(100vh-64px)] overflow-y-auto z-20 transition-all duration-300 ease-in-out ${isSidebarExpanded ? 'w-64' : 'w-24 items-center'}`}>
+                <div className={`flex items-center mb-12 ${isSidebarExpanded ? 'justify-between' : 'justify-center flex-col gap-4'}`}>
+                    <div className="flex items-center text-2xl font-black gradient-text">
+                        <LayoutDashboard className={`text-blue-500 ${isSidebarExpanded ? 'w-8 h-8 mr-3' : 'w-10 h-10'}`} />
+                        {isSidebarExpanded && <span>Console</span>}
+                    </div>
+                    <button
+                        onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+                        className={`p-1 rounded-lg bg-white/5 text-slate-400 hover:text-white transition-all ${!isSidebarExpanded && 'hidden'}`}
+                        title="Collapse Sidebar"
+                    >
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    {!isSidebarExpanded && (
+                        <button
+                            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+                            className="p-1.5 mt-2 rounded-lg bg-white/5 text-slate-400 hover:text-white transition-all"
+                            title="Expand Sidebar"
+                        >
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    )}
                 </div>
 
-                <nav className="space-y-2 flex-grow">
-                    <button className="w-full flex items-center p-3 rounded-xl bg-blue-600 shadow-lg shadow-blue-900/40 text-white font-bold transition-all">
-                        <Package className="w-5 h-5 mr-3" />
-                        Products
+                <nav className="space-y-3 flex-grow w-full">
+                    <button className={`flex items-center p-3 rounded-xl bg-blue-600 shadow-lg shadow-blue-900/40 text-white font-bold transition-all w-full ${isSidebarExpanded ? '' : 'justify-center'}`} title={!isSidebarExpanded ? "Products" : ""}>
+                        <Package className={`w-6 h-6 ${isSidebarExpanded ? 'mr-3' : ''}`} />
+                        {isSidebarExpanded && <span>Products</span>}
                     </button>
-                    <button className="w-full flex items-center p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-                        <Store className="w-5 h-5 mr-3" />
-                        Stores
+                    <button className={`flex items-center p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all w-full ${isSidebarExpanded ? '' : 'justify-center'}`} title={!isSidebarExpanded ? "Stores" : ""}>
+                        <Store className={`w-6 h-6 ${isSidebarExpanded ? 'mr-3' : ''}`} />
+                        {isSidebarExpanded && <span>Stores</span>}
                     </button>
-                    <button className="w-full flex items-center p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-                        <Users className="w-5 h-5 mr-3" />
-                        Users
+                    <button className={`flex items-center p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all w-full ${isSidebarExpanded ? '' : 'justify-center'}`} title={!isSidebarExpanded ? "Users" : ""}>
+                        <Users className={`w-6 h-6 ${isSidebarExpanded ? 'mr-3' : ''}`} />
+                        {isSidebarExpanded && <span>Users</span>}
                     </button>
-                    <button className="w-full flex items-center p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-                        <TrendingUp className="w-5 h-5 mr-3" />
-                        Analytics
+                    <button className={`flex items-center p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all w-full ${isSidebarExpanded ? '' : 'justify-center'}`} title={!isSidebarExpanded ? "Analytics" : ""}>
+                        <TrendingUp className={`w-6 h-6 ${isSidebarExpanded ? 'mr-3' : ''}`} />
+                        {isSidebarExpanded && <span>Analytics</span>}
                     </button>
                 </nav>
 
-                <div className="pt-6 border-t border-white/5">
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Account</p>
-                    <div className="flex items-center p-2">
-                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-black mr-3 shadow-lg">
+                <div className={`pt-6 border-t border-white/5 w-full ${!isSidebarExpanded && 'flex flex-col items-center'}`}>
+                    {isSidebarExpanded && <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Account</p>}
+                    <div className={`flex ${isSidebarExpanded ? 'items-center p-2' : 'justify-center'}`}>
+                        <div className={`rounded-full bg-blue-600 flex items-center justify-center font-black shadow-lg ${isSidebarExpanded ? 'w-10 h-10 mr-3' : 'w-12 h-12'}`} title={!isSidebarExpanded ? `Logged in as ${user.name}` : ""}>
                             {user.name.charAt(0)}
                         </div>
-                        <div className="overflow-hidden">
-                            <p className="text-sm font-bold text-white truncate">{user.name}</p>
-                            <p className="text-xs text-slate-500 truncate">Administrator</p>
-                        </div>
+                        {isSidebarExpanded && (
+                            <div className="overflow-hidden">
+                                <p className="text-sm font-bold text-white truncate">{user.name}</p>
+                                <p className="text-xs text-slate-500 truncate">Administrator</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-grow lg:ml-64 p-4 md:p-10 mt-6 lg:mt-16 max-w-full overflow-x-hidden">
+            <main className={`flex-grow p-4 md:p-10 mt-6 lg:mt-16 max-w-full overflow-x-hidden transition-all duration-300 ease-in-out ${isSidebarExpanded ? 'lg:ml-64' : 'lg:ml-24'}`}>
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
                     {[
