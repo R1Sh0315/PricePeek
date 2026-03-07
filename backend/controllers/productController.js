@@ -45,16 +45,7 @@ const getProducts = asyncHandler(async (req, res) => {
     })
   );
 
-  let finalProducts = [...productsWithPrices];
-
-  // If the user actually searched for something, go fetch exactly what they asked for from Amazon
-  if (req.query.keyword) {
-    const liveAmazonResults = await searchLiveAmazonProducts(req.query.keyword);
-    // Append the live amazon results to the local database results
-    finalProducts = [...finalProducts, ...liveAmazonResults];
-  }
-
-  res.json({ products: finalProducts, page, pages: Math.ceil(count / pageSize) });
+  res.json({ products: productsWithPrices, page, pages: Math.ceil(count / pageSize) });
 });
 
 // @desc    Get product details by ID
