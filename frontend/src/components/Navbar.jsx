@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, User, LogOut, Menu, X, ChevronDown, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +9,23 @@ const Navbar = () => {
     const [keyword, setKeyword] = useState('');
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const dropdownRef = useRef(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowUserMenu(false);
+            }
+        };
+
+        // Add event listener
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            // Cleanup event listener
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -49,7 +66,7 @@ const Navbar = () => {
                         <Link to="/compare" className="text-slate-300 hover:text-white transition-colors">Compare</Link>
 
                         {user ? (
-                            <div className="relative">
+                            <div className="relative" ref={dropdownRef}>
                                 <button
                                     onClick={() => setShowUserMenu(!showUserMenu)}
                                     className="flex items-center space-x-2 text-slate-300 hover:text-white transition-colors focus:outline-none"
