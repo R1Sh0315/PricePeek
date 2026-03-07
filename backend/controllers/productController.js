@@ -128,6 +128,21 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
+  if (Array.isArray(req.body)) {
+    // Handle multiple products (batch upload)
+    const productsToCreate = req.body.map(item => ({
+      name: item.name,
+      description: item.description,
+      category: item.category,
+      images: item.images || [],
+      brand: item.brand,
+      user: req.user._id,
+    }));
+    const createdProducts = await Product.insertMany(productsToCreate);
+    return res.status(201).json(createdProducts);
+  }
+
+  // Handle single product creation
   const { name, description, category, images, brand } = req.body;
 
   const product = new Product({
