@@ -10,6 +10,7 @@ import Signup from './pages/Signup';
 import SearchResults from './pages/SearchResults';
 import ProductDetails from './pages/ProductDetails';
 import AdminDashboard from './pages/AdminDashboard';
+import Deals from './pages/Deals';
 
 import { ShoppingCart, Search, ArrowRight, ShieldCheck, Zap, BarChart3, TrendingDown } from 'lucide-react';
 import ProductCard from './components/ProductCard';
@@ -57,7 +58,7 @@ const Home = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in">
-            <Link to="/search" className="group px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-900/40 flex items-center">
+            <Link to="/deals" className="group px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-900/40 flex items-center">
               Explore Best Deals
               <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -131,6 +132,7 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/search" element={<SearchResults />} />
+                <Route path="/deals" element={<Deals />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/dashboard" element={<AdminDashboard />} />
                 {/* Other routes will be added here */}
