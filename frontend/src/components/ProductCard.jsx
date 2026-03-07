@@ -25,7 +25,7 @@ const ProductCard = ({ product }) => {
                     <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">{product.category}</span>
                     <div className="flex items-center text-yellow-400 text-xs font-bold">
                         <Star className="w-3.5 h-3.5 fill-current mr-1 text-yellow-500" />
-                        {product.averageRating || '4.5'}
+                        {product.averageRating > 0 ? product.averageRating : '0'}
                     </div>
                 </div>
 

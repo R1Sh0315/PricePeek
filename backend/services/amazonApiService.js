@@ -101,13 +101,18 @@ const searchLiveAmazonProducts = async (keyword) => {
                     numericPrice = Number(p.product_price.replace(/[^0-9.-]+/g, ""));
                 }
 
-                // Create a 'synthetic' product format that matches our MongoDB schema
+                // Extract real brand from title (using first word or phrase if possible)
+                let derivedBrand = 'Amazon Merchant';
+                if (p.product_title) {
+                    derivedBrand = p.product_title.split(' ')[0] || derivedBrand;
+                }
+
                 return {
-                    _id: `amazon-${p.asin}`, // fake ID
+                    _id: `amazon-${p.asin}`, // Dynamic ID mapped to real ASIN
                     name: p.product_title,
-                    description: 'Live Amazon Result',
-                    category: 'Search Result',
-                    brand: 'Amazon',
+                    description: `Genuine product fetched in real-time right from Amazon India's live inventory system.`,
+                    category: p.product_category || 'Electronics & More',
+                    brand: derivedBrand,
                     images: [p.product_photo],
                     bestPrice: numericPrice,
                     bestStore: 'Amazon India',
