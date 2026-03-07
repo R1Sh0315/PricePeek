@@ -36,7 +36,7 @@ const seedData = async () => {
       name: 'Amazon India',
       logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
       websiteUrl: 'https://www.amazon.in',
-      affiliateId: 'pricepeek-21'
+      affiliateId: 'pricepeekindi-21'
     });
 
     const flipkart = await Store.create({
