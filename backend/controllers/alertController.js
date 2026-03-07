@@ -60,6 +60,11 @@ const checkAndSendAlerts = async (productId, currentPrice) => {
 const createPriceAlert = asyncHandler(async (req, res) => {
   const { productId, targetPrice } = req.body;
 
+  if (productId.startsWith('amazon-')) {
+    res.status(400);
+    throw new Error('Price alerts are currently only supported for tracked database products.');
+  }
+
   const productAlreadyAlerted = await PriceAlert.findOne({
     user: req.user._id,
     product: productId,

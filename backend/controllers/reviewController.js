@@ -43,6 +43,9 @@ const createProductReview = async (req, res, next) => {
 // @access  Public
 const getProductReviews = async (req, res, next) => {
   try {
+    if (req.params.productId.startsWith('amazon-')) {
+       return res.json([]);
+    }
     const reviews = await Review.find({ product: req.params.productId }).populate('user', 'name');
     res.json(reviews);
   } catch (err) {

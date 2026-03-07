@@ -64,6 +64,135 @@ const fetchLiveAmazonPrice = async (keyword) => {
     }
 };
 
+const searchLiveAmazonProducts = async (keyword) => {
+    try {
+        const options = {
+            method: 'GET',
+            url: 'https://real-time-amazon-data.p.rapidapi.com/search',
+            params: {
+                query: keyword,
+                page: '1',
+                country: 'IN',
+                sort_by: 'RELEVANCE',
+                product_condition: 'NEW'
+            },
+            headers: {
+                'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+                'X-RapidAPI-Host': 'real-time-amazon-data.p.rapidapi.com'
+            }
+        };
+
+        const response = await axios.request(options);
+
+        if (response.data && response.data.data && response.data.data.products && response.data.data.products.length > 0) {
+            return response.data.data.products.slice(0, 12).map(p => {
+                let productUrl = p.product_url;
+                if (productUrl) {
+                    const tag = process.env.AMAZON_PARTNER_TAG || 'pricepeekindia-21';
+                    if (productUrl.includes('?')) {
+                        productUrl += `&tag=${tag}`;
+                    } else {
+                        productUrl += `?tag=${tag}`;
+                    }
+                }
+
+                let numericPrice = null;
+                if (p.product_price) {
+                    numericPrice = Number(p.product_price.replace(/[^0-9.-]+/g, ""));
+                }
+
+                // Create a 'synthetic' product format that matches our MongoDB schema
+                return {
+                    _id: `amazon-${p.asin}`, // fake ID
+                    name: p.product_title,
+                    description: 'Live Amazon Result',
+                    category: 'Search Result',
+                    brand: 'Amazon',
+                    images: [p.product_photo],
+                    bestPrice: numericPrice,
+                    bestStore: 'Amazon India',
+                    bestPriceUrl: productUrl,
+                    averageRating: p.product_star_rating ? Number(p.product_star_rating) : 0,
+                    numReviews: p.product_num_ratings ? Number(p.product_num_ratings) : 0,
+                };
+            });
+        }
+        return [];
+    } catch (error) {
+        console.error('Error searching live Amazon data:', error.message);
+        return [];
+    }
+};
+
+const fetchLiveAmazonProductDetails = async (asin) => {
+    try {
+        const options = {
+            method: 'GET',
+            url: 'https://real-time-amazon-data.p.rapidapi.com/product-details',
+            params: {
+                asin: asin,
+                country: 'IN'
+            },
+            headers: {
+                'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+                'X-RapidAPI-Host': 'real-time-amazon-data.p.rapidapi.com'
+            }
+        };
+
+        const response = await axios.request(options);
+        const p = response.data.data;
+        
+        if (p) {
+             let productUrl = p.product_url;
+             if (productUrl) {
+                 const tag = process.env.AMAZON_PARTNER_TAG || 'pricepeekindia-21';
+                 if (productUrl.includes('?')) {
+                     productUrl += `&tag=${tag}`;
+                 } else {
+                     productUrl += `?tag=${tag}`;
+                 }
+             }
+
+             let numericPrice = null;
+             if (p.product_price) {
+                 numericPrice = Number(p.product_price.replace(/[^0-9.-]+/g, ""));
+             }
+
+             return {
+                 _id: `amazon-${asin}`,
+                 name: p.product_title,
+                 description: p.product_description || 'Product details fetched directly from Amazon India.',
+                 category: 'Searched Amazon Product',
+                 brand: p.product_byline || 'Amazon',
+                 images: [p.product_photo],
+                 bestPrice: numericPrice,
+                 averageRating: p.product_star_rating ? Number(p.product_star_rating) : 0,
+                 numReviews: p.product_num_ratings ? Number(p.product_num_ratings) : 0,
+                 stores: [
+                     {
+                         store: {
+                             name: 'Amazon India (Live API)',
+                             websiteUrl: 'https://amazon.in',
+                             logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg'
+                         },
+                         price: numericPrice,
+                         currency: 'INR',
+                         productUrl: productUrl,
+                         isAvailable: true,
+                         history: [] 
+                     }
+                 ]
+             };
+        }
+        return null;
+    } catch(err) {
+        console.error('Failed to get live amazon product detail', err.message);
+        return null;
+    }
+}
+
 module.exports = {
-    fetchLiveAmazonPrice
+    fetchLiveAmazonPrice,
+    searchLiveAmazonProducts,
+    fetchLiveAmazonProductDetails
 };
