@@ -65,10 +65,16 @@ const ProductDetails = () => {
         }
     };
 
-    const handleBuyClick = async (storeId, price) => {
+    const handleBuyClick = async (storeId, price, externalUrl) => {
         setRedirecting(true);
         try {
-            // 1. Track the click and get the affiliate URL
+            // If the URL is already provided (synthetic Amazon response), just open it directly
+            if (id.startsWith('amazon-') && externalUrl) {
+                window.open(externalUrl, '_blank', 'noopener,noreferrer');
+                return;
+            }
+
+            // 1. Track the click and get the affiliate URL from DB
             const { data } = await axios.post('/api/clicks', {
                 productId: id,
                 storeId,
@@ -82,7 +88,9 @@ const ProductDetails = () => {
         } catch (err) {
             console.error('Click tracking failed', err);
             // Fallback: If tracking fails, alert the user but don't block them if we had a direct URL
-            // (though in a production app we'd have a secondary way)
+            if (externalUrl) {
+                window.open(externalUrl, '_blank', 'noopener,noreferrer');
+            }
         } finally {
             setRedirecting(false);
         }
@@ -210,7 +218,7 @@ const ProductDetails = () => {
                                             </div>
 
                                             <button
-                                                onClick={() => handleBuyClick(entry.store._id, entry.price)}
+                                                onClick={() => handleBuyClick(entry.store._id, entry.price, entry.productUrl)}
                                                 disabled={!entry.isAvailable || redirecting}
                                                 className={`group flex items-center px-6 py-4 rounded-2xl font-black transition-all ${entry.price === product.bestPrice
                                                     ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]'
