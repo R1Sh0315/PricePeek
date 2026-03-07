@@ -96,9 +96,9 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-950">
-            {/* Sidebar */}
-            <aside className="w-64 glass border-r border-white/5 p-6 flex flex-col fixed h-full z-20">
+        <div className="flex min-h-screen bg-slate-950 flex-col md:flex-row">
+            {/* Sidebar (Hidden on small screens) */}
+            <aside className="hidden lg:flex w-64 glass border-r border-white/5 p-6 flex-col fixed h-[calc(100vh-64px)] overflow-y-auto z-20">
                 <div className="flex items-center text-2xl font-black gradient-text mb-12">
                     <LayoutDashboard className="w-8 h-8 mr-3 text-blue-500" />
                     Console
@@ -138,9 +138,9 @@ const AdminDashboard = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-grow ml-64 p-10 mt-16">
+            <main className="flex-grow lg:ml-64 p-4 md:p-10 mt-6 lg:mt-16 max-w-full overflow-x-hidden">
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
                     {[
                         { label: 'Total Products', val: stats.products, icon: Package, color: 'text-blue-500' },
                         { label: 'Active Stores', val: stats.stores, icon: Store, color: 'text-indigo-500' },
@@ -161,22 +161,22 @@ const AdminDashboard = () => {
 
                 {/* Products Table Area */}
                 <div className="glass rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
-                    <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                    <div className="p-6 md:p-8 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h2 className="text-2xl font-black text-white mb-1">Product Inventory</h2>
-                            <p className="text-slate-500 text-sm">Manage your product catalog and store pricing.</p>
+                            <h2 className="text-xl md:text-2xl font-black text-white mb-1">Product Inventory</h2>
+                            <p className="text-slate-500 text-xs md:text-sm">Manage your product catalog and store pricing.</p>
                         </div>
                         <button
                             onClick={() => setShowProductModal(true)}
-                            className="flex items-center px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black transition-all shadow-lg active:scale-95"
+                            className="flex items-center justify-center px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black transition-all shadow-lg active:scale-95 w-full sm:w-auto"
                         >
                             <PlusCircle className="w-5 h-5 mr-3" />
                             New Product
                         </button>
                     </div>
 
-                    <div className="p-8">
-                        <div className="relative mb-8 max-w-md">
+                    <div className="p-4 md:p-8">
+                        <div className="relative mb-6 md:mb-8 w-full md:max-w-md">
                             <Search className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
                             <input
                                 type="text"
@@ -192,31 +192,29 @@ const AdminDashboard = () => {
                                 <div className="h-10 bg-slate-800 rounded-xl w-full" />
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
+                            <div className="overflow-x-auto w-full">
+                                <table className="w-full text-left min-w-[700px]">
                                     <thead>
-                                        <tr className="text-slate-500 text-xs font-black uppercase tracking-widest border-b border-white/5">
+                                        <tr className="text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-widest border-b border-white/5">
                                             <th className="px-4 py-4">Product Name</th>
-                                            <th className="px-4 py-4">Category</th>
-                                            <th className="px-4 py-4">Brand</th>
-                                            <th className="px-4 py-4">Created At</th>
+                                            <th className="px-4 py-4 hidden md:table-cell">Category</th>
+                                            <th className="px-4 py-4 hidden sm:table-cell">Brand</th>
                                             <th className="px-4 py-4 text-right">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
                                         {products.map((p) => (
                                             <tr key={p._id} className="hover:bg-white/5 transition-all group">
-                                                <td className="px-4 py-6 font-bold text-white flex items-center">
-                                                    <div className="w-10 h-10 bg-white/5 rounded-lg flex-shrink-0 mr-4 overflow-hidden p-1 border border-white/5">
+                                                <td className="px-4 py-4 md:py-6 font-bold text-white flex items-center min-w-[200px]">
+                                                    <div className="w-8 h-8 md:w-10 md:h-10 bg-white/5 rounded-lg flex-shrink-0 mr-3 md:mr-4 overflow-hidden p-1 border border-white/5">
                                                         <img src={p.images?.[0]} alt="" className="w-full h-full object-contain" />
                                                     </div>
-                                                    <span className="truncate">{p.name}</span>
+                                                    <span className="truncate text-xs md:text-sm">{p.name}</span>
                                                 </td>
-                                                <td className="px-4 py-6 text-slate-400">{p.category}</td>
-                                                <td className="px-4 py-6 text-slate-400 capitalize">{p.brand}</td>
-                                                <td className="px-4 py-6 text-slate-500 text-xs font-mono">{new Date(p.createdAt).toLocaleDateString()}</td>
-                                                <td className="px-4 py-6 text-right">
-                                                    <div className="flex items-center justify-end space-x-2">
+                                                <td className="px-4 py-4 md:py-6 text-slate-400 text-xs md:text-sm hidden md:table-cell">{p.category}</td>
+                                                <td className="px-4 py-4 md:py-6 text-slate-400 capitalize text-xs md:text-sm hidden sm:table-cell">{p.brand}</td>
+                                                <td className="px-4 py-4 md:py-6 text-right">
+                                                    <div className="flex items-center justify-end space-x-1 md:space-x-2">
                                                         <button
                                                             className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-white hover:bg-slate-800 transition-all border border-white/5"
                                                             title="Edit Product"
