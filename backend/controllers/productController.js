@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Product = require('../models/Product');
 const Price = require('../models/Price');
+const { fetchLiveAmazonPrice } = require('../services/amazonApiService');
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -56,17 +57,52 @@ const getProductById = asyncHandler(async (req, res) => {
   if (product) {
     const prices = await Price.find({ product: product._id }).populate('store');
 
+    // Fetch live data from Amazon API
+    const liveAmazonData = await fetchLiveAmazonPrice(product.name);
+    
+    let storesList = prices.map(price => ({
+      store: price.store,
+      price: price.price,
+      currency: price.currency,
+      productUrl: price.productUrl,
+      isAvailable: price.isAvailable,
+      history: price.history,
+    }));
+
+    // If live API returns data, replace or append the Amazon store entry
+    if (liveAmazonData && liveAmazonData.price) {
+      const existingAmazonIndex = storesList.findIndex(s => s.store.name && s.store.name.includes('Amazon'));
+      
+      const liveStoreObject = {
+        store: { 
+           name: 'Amazon India (Live API)', 
+           websiteUrl: 'https://amazon.in',
+           logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg' // Fallback logo
+        },
+        price: liveAmazonData.price,
+        currency: 'INR',
+        productUrl: liveAmazonData.url,
+        isAvailable: liveAmazonData.inStock,
+        history: existingAmazonIndex !== -1 ? storesList[existingAmazonIndex].history : []
+      };
+
+      if (existingAmazonIndex !== -1) {
+         // Replace the old DB Amazon data with the Live API data
+         // Keep the DB logo if possible
+         if(storesList[existingAmazonIndex].store.logo) {
+            liveStoreObject.store.logo = storesList[existingAmazonIndex].store.logo;
+         }
+         storesList[existingAmazonIndex] = liveStoreObject;
+      } else {
+         // Append it if Amazon wasn't in DB for this product somehow
+         storesList.push(liveStoreObject);
+      }
+    }
+
     res.json({
       ...product._doc,
-      stores: prices.map(price => ({
-        store: price.store,
-        price: price.price,
-        currency: price.currency,
-        productUrl: price.productUrl,
-        isAvailable: price.isAvailable,
-        history: price.history,
-      })),
-      bestPrice: prices.length > 0 ? Math.min(...prices.map(p => p.price)) : null
+      stores: storesList,
+      bestPrice: storesList.length > 0 ? Math.min(...storesList.map(p => p.price)) : null
     });
   } else {
     res.status(404);
