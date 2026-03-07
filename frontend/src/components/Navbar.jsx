@@ -62,8 +62,8 @@ const Navbar = () => {
                                 </button>
 
                                 {showUserMenu && (
-                                    <div className="absolute right-0 mt-2 w-56 glass rounded-2xl overflow-hidden shadow-2xl animate-fade-in py-2 border border-white/10">
-                                        <div className="px-4 py-3 border-b border-white/5 mb-2">
+                                    <div className="absolute right-0 top-12 mt-2 w-56 bg-slate-900 rounded-2xl overflow-hidden shadow-2xl animate-fade-in py-2 border border-slate-700/80 z-50">
+                                        <div className="px-4 py-3 border-b border-slate-700/50 mb-2">
                                             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Logged in as</p>
                                             <p className="text-sm font-bold text-white truncate">{user.name}</p>
                                         </div>
