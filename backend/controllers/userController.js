@@ -94,8 +94,34 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
+// @desc    Get admin statistics
+// @route   GET /api/users/stats
+// @access  Private/Admin
+const getAdminStats = async (req, res, next) => {
+  try {
+    const Product = require('../models/Product');
+    const Store = require('../models/Store');
+    const ClickTracking = require('../models/ClickTracking');
+
+    const productsCount = await Product.countDocuments({});
+    const storesCount = await Store.countDocuments({});
+    const clicksCount = await ClickTracking.countDocuments({});
+    const usersCount = await User.countDocuments({});
+
+    res.json({
+      products: productsCount,
+      stores: storesCount,
+      clicks: clicksCount,
+      users: usersCount,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
+  getAdminStats,
 };

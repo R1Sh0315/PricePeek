@@ -48,15 +48,15 @@ const AdminDashboard = () => {
             try {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
                 const { data } = await axios.get('/api/products?pageNumber=ALL', config);
-                // In my simplified backend it might not support pageNumber=ALL, but let's assume it returns products array
                 setProducts(data.products || data);
 
-                // Fetch basic stats (Mocked for now as we don't have separate stats endpoint)
+                // Fetch real stats from our new backend endpoint
+                const { data: statsData } = await axios.get('/api/users/stats', config);
                 setStats({
-                    products: (data.products || data).length,
-                    stores: 3,
-                    clicks: 124,
-                    users: 1
+                    products: statsData.products,
+                    stores: statsData.stores,
+                    clicks: statsData.clicks,
+                    users: statsData.users
                 });
             } catch (err) {
                 console.error(err);
