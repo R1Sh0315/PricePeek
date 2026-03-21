@@ -11,6 +11,7 @@ import SearchResults from './pages/SearchResults';
 import ProductDetails from './pages/ProductDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import Deals from './pages/Deals';
+import WatchCatalog from './pages/WatchCatalog';
 
 import { ShoppingCart, Search, ArrowRight, ShieldCheck, Zap, BarChart3, TrendingDown } from 'lucide-react';
 import ProductCard from './components/ProductCard';
@@ -22,7 +23,7 @@ const Home = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const { data } = await axios.get('/api/products?limit=4');
+        const { data } = await axios.get('/api/products?keyword=Watch&limit=4');
         const productList = Array.isArray(data) ? data : data.products;
         setFeatured((productList || []).slice(0, 4));
       } catch (err) {
@@ -37,8 +38,8 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Helmet>
-        <title>PricePeek India | Best Price Comparison & Price Tracker</title>
-        <meta name="description" content="Compare prices across Amazon India, Flipkart, Croma, and more. Track price history and set alerts for the best deals in India." />
+        <title>PricePeek India | Best Wrist Watch Deals</title>
+        <meta name="description" content="Compare prices for Apple Watch and other wrist watches across Amazon India, Flipkart, and more. Track price history and set alerts." />
       </Helmet>
       {/* Hero Section */}
       <section className="relative py-24 px-4 overflow-hidden">
@@ -48,22 +49,22 @@ const Home = () => {
 
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-full text-blue-400 text-sm font-bold mb-6 animate-fade-in shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-            🚀 PricePeek v1.0 is now live in India
+            ⌚ Featured Focus: Premium Wrist Watches
           </div>
           <h1 className="text-6xl md:text-8xl font-black gradient-text mb-8 tracking-tighter animate-fade-in leading-[1.1]">
-            Stop Overpaying.<br />Start Peekin'.
+            Track Watch Prices.<br />Save Big.
           </h1>
           <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto leading-relaxed mb-12 animate-fade-in">
-            Peek across thousands of Indian e-commerce stores instantly. Compare prices on Amazon, Flipkart, Croma and more. Track history and grab the absolute best deals.
+            Peek across thousands of Indian e-commerce stores for the best deals on Apple Watch and premium timepieces. Compare and track history instantly.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in">
             <Link to="/deals" className="group px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-900/40 flex items-center">
-              Explore Best Deals
+              Explore Watch Deals
               <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link to="/search" className="px-8 py-4 glass border border-white/10 text-white font-black rounded-2xl hover:bg-white/5 transition-all">
-              See Live Prices
+              Live Price Peek
             </Link>
           </div>
         </div>
@@ -73,9 +74,9 @@ const Home = () => {
       <section className="py-20 border-y border-white/5 bg-slate-900/30">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-            { icon: ShieldCheck, title: "Verified Links", desc: "Every affiliate link is hand-verified for your safety and trust." },
-            { icon: BarChart3, title: "Price Tracking", desc: "Watch how prices fluctuate over time with our deep history engine." },
-            { icon: Zap, title: "Real-time Peek", desc: "Ultra-fast comparison engine that pulls data from top Indian retailers." }
+            { icon: ShieldCheck, title: "Genuine Stores", desc: "We only track prices from authorized Indian retailers like Amazon and Croma." },
+            { icon: BarChart3, title: "Historical Lows", desc: "Identify the absolute lowest price ever recorded for your dream watch." },
+            { icon: Zap, title: "Instant Alerts", desc: "Get notified the moment there's a price drop on your tracked watches." }
           ].map((f, i) => (
             <div key={i} className="text-center group">
               <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
@@ -93,10 +94,10 @@ const Home = () => {
         <div className="flex items-center justify-between mb-12">
           <h2 className="text-4xl font-black text-white flex items-center">
             <TrendingDown className="w-10 h-10 mr-4 text-blue-500" />
-            Trending Deals
+            Trending Watch Deals
           </h2>
-          <Link to="/search" className="text-blue-400 font-bold hover:text-blue-300 transition-colors flex items-center group">
-            View all Catalog
+          <Link to="/all" className="text-blue-400 font-bold hover:text-blue-300 transition-colors flex items-center group">
+            View all Watches
             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -133,6 +134,7 @@ const App = () => {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/search" element={<SearchResults />} />
                 <Route path="/deals" element={<Deals />} />
+                <Route path="/all" element={<WatchCatalog />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/dashboard" element={<AdminDashboard />} />
                 {/* Other routes will be added here */}
