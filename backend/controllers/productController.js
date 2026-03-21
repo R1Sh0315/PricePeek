@@ -128,7 +128,9 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-  if (Array.isArray(req.body)) {
+  console.log('Product Creation Request Received');
+  
+  if (Array.isArray(req.body) && req.body.length > 0) {
     // Handle multiple products (batch upload)
     const productsToCreate = req.body.map(item => ({
       name: item.name,
@@ -136,14 +138,26 @@ const createProduct = asyncHandler(async (req, res) => {
       category: item.category,
       images: item.images || [],
       brand: item.brand,
-      user: req.user._id,
     }));
-    const createdProducts = await Product.insertMany(productsToCreate);
-    return res.status(201).json(createdProducts);
+    
+    try {
+      const createdProducts = await Product.insertMany(productsToCreate);
+      return res.status(201).json(createdProducts);
+    } catch (insertError) {
+      console.error('InsertMany Error:', insertError.message);
+      res.status(400);
+      throw new Error(`Bulk upload validation failed: ${insertError.message}`);
+    }
   }
 
-  // Handle single product creation
-  const { name, description, category, images, brand } = req.body;
+  // Handle single product creation (fallback or direct)
+  const productData = Array.isArray(req.body) ? req.body[0] : req.body;
+  const { name, description, category, images, brand } = productData;
+
+  if (!name || !description || !category) {
+      res.status(400);
+      throw new Error(`Field validation failed: name, description, and category are all required.`);
+  }
 
   const product = new Product({
     name,
@@ -151,7 +165,6 @@ const createProduct = asyncHandler(async (req, res) => {
     category,
     images: images || [],
     brand,
-    user: req.user._id,
   });
 
   const createdProduct = await product.save();
