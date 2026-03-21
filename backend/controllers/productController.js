@@ -128,17 +128,30 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-  console.log('Product Creation Request Received');
+  // Debug log (only visible to server logs)
+  console.log('--- Product Creation Start ---');
+  console.log('Body Type:', typeof req.body);
+  console.log('Is Array:', Array.isArray(req.body));
   
-  if (Array.isArray(req.body) && req.body.length > 0) {
-    // Handle multiple products (batch upload)
-    const productsToCreate = req.body.map(item => ({
-      name: item.name,
-      description: item.description,
-      category: item.category,
-      images: item.images || [],
-      brand: item.brand,
-    }));
+  if (!req.body || (Array.isArray(req.body) && req.body.length === 0)) {
+    res.status(400);
+    throw new Error('No product data provided in request body');
+  }
+
+  // Handle Array / Bulk
+  if (Array.isArray(req.body)) {
+    const productsToCreate = req.body.map((item, index) => {
+       if (!item.name || !item.description || !item.category) {
+          throw new Error(`Product at index ${index} is missing required fields (name, description, or category)`);
+       }
+       return {
+         name: item.name,
+         description: item.description,
+         category: item.category,
+         images: item.images || [],
+         brand: item.brand,
+       };
+    });
     
     try {
       const createdProducts = await Product.insertMany(productsToCreate);
@@ -150,13 +163,11 @@ const createProduct = asyncHandler(async (req, res) => {
     }
   }
 
-  // Handle single product creation (fallback or direct)
-  const productData = Array.isArray(req.body) ? req.body[0] : req.body;
-  const { name, description, category, images, brand } = productData;
-
+  // Handle Single Object
+  const { name, description, category, images, brand } = req.body;
   if (!name || !description || !category) {
-      res.status(400);
-      throw new Error(`Field validation failed: name, description, and category are all required.`);
+    res.status(400);
+    throw new Error('Single product missing required fields: name, description, and category are required.');
   }
 
   const product = new Product({
